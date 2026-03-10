@@ -1,0 +1,3 @@
+C:/Users/matti/Desktop/UNIVERSITA/parallel/Ex1/build/CMakeFiles/my_kmeans.dir
+C:/Users/matti/Desktop/UNIVERSITA/parallel/Ex1/build/CMakeFiles/edit_cache.dir
+C:/Users/matti/Desktop/UNIVERSITA/parallel/Ex1/build/CMakeFiles/rebuild_cache.dir
