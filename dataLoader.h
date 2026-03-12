@@ -7,8 +7,9 @@
 #include "kMeansSeq.h" 
 #include "kMeansPar.h"
 
-// Dichiarazione della funzione di caricamento
 std::vector<Point> loadIrisDataset();
 std::vector<Point> loadWineDataset();
+std::vector<Point> loadDigitDataset();
+std::vector<Point> loadGeneratedDataset();
 
 #endif

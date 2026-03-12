@@ -80,3 +80,89 @@ std::vector<Point> loadWineDataset() {
     
     return dataset;
 }
+
+
+std::vector<Point> loadDigitDataset() {
+    std::vector<Point> dataset;
+    // Assicurati di rinominare il file scaricato in "mnist.csv" e metterlo nella cartella
+    std::ifstream file("datasets/mnist.csv"); 
+    std::string line;
+
+    if (!file.is_open()) {
+        std::cerr << "Errore: Impossibile aprire datasets/mnist.csv\n";
+        return dataset;
+    }
+
+    // [!] TRUCCO MNIST 1: Leggiamo la prima riga a vuoto per saltare l'intestazione
+    std::getline(file, line);
+
+    while (std::getline(file, line)) {
+        if (line.empty()) continue; 
+        
+        std::stringstream ss(line);
+        std::string token;
+        std::vector<double> features;
+
+        // [!] TRUCCO MNIST 2: Leggiamo la prima colonna (l'etichetta del numero 0-9) e la ignoriamo
+        std::getline(ss, token, ','); 
+
+        // Ora estraiamo i 784 pixel dell'immagine
+        for (int i = 0; i < 784; ++i) {
+            if (std::getline(ss, token, ',')) {
+                try { 
+                    features.push_back(std::stod(token)); 
+                } catch (...) { 
+                    break; 
+                }
+            }
+        }
+        
+        // Aggiungiamo il punto solo se abbiamo letto esattamente 784 dimensioni
+        if (features.size() == 784) {
+            dataset.push_back(Point(features));
+        }
+    }
+    
+    return dataset;
+}
+
+
+
+std::vector<Point> loadGeneratedDataset() {
+    std::vector<Point> dataset;
+    std::ifstream file("datasets/generatedDataset.csv"); 
+    std::string line;
+
+    if (!file.is_open()) {
+        std::cerr << "Errore: Impossibile aprire datasets/generatedDataset.csv\n";
+        return dataset;
+    }
+
+    // [!] TRUCCO 1: Leggiamo la primissima riga a vuoto per saltare l'intestazione (X1,X2,...)
+    std::getline(file, line);
+
+    while (std::getline(file, line)) {
+        if (line.empty()) continue; 
+        
+        std::stringstream ss(line);
+        std::string token;
+        std::vector<double> features;
+
+        // [!] TRUCCO 2: Leggiamo DINAMICAMENTE tutte le colonne presenti.
+        // Se domani generi 100 dimensioni, questo ciclo le leggerà tutte in automatico!
+        while (std::getline(ss, token, ',')) {
+            try { 
+                features.push_back(std::stod(token)); 
+            } catch (...) { 
+                // Se c'è un errore di conversione (es. uno spazio vuoto imprevisto), lo ignoriamo
+            }
+        }
+        
+        // Aggiungiamo il punto al dataset solo se abbiamo estratto almeno una coordinata
+        if (!features.empty()) {
+            dataset.push_back(Point(features));
+        }
+    }
+    
+    return dataset;
+}

@@ -14,7 +14,7 @@
 int main() {
     
     // Carichiamo il dataset
-    std::vector<Point> dataset = loadWineDataset();
+    std::vector<Point> dataset = loadGeneratedDataset();
     
     if (dataset.empty()) {
         return 1; // Uscita con errore se il file non viene trovato
@@ -23,8 +23,8 @@ int main() {
     std::cout << "Caricati " << dataset.size() << " punti dal dataset\n\n";
 
     // 2. Parametri del K-Means
-    int K = 3; 
-    int max_iters = 200;
+    int K = 10; 
+    int max_iters = 50;
 
     // Creiamo una copia del dataset per fare un confronto equo, 
     // altrimenti la versione parallela partirebbe con i cluster già assegnati!
