@@ -73,6 +73,18 @@ build CMakeFiles/my_kmeans.dir/Point.cpp.obj: CXX_COMPILER__my_kmeans_unscanned_
   OBJECT_DIR = CMakeFiles\my_kmeans.dir
   OBJECT_FILE_DIR = CMakeFiles\my_kmeans.dir
 
+build CMakeFiles/my_kmeans.dir/DatasetSoA.cpp.obj: CXX_COMPILER__my_kmeans_unscanned_Debug C$:/Users/matti/Desktop/UNIVERSITA/parallel/Ex1/DatasetSoA.cpp || cmake_object_order_depends_target_my_kmeans
+  DEP_FILE = CMakeFiles\my_kmeans.dir\DatasetSoA.cpp.obj.d
+  FLAGS = -g -std=gnu++17 -fopenmp
+  OBJECT_DIR = CMakeFiles\my_kmeans.dir
+  OBJECT_FILE_DIR = CMakeFiles\my_kmeans.dir
+
+build CMakeFiles/my_kmeans.dir/kMeansParSoA.cpp.obj: CXX_COMPILER__my_kmeans_unscanned_Debug C$:/Users/matti/Desktop/UNIVERSITA/parallel/Ex1/kMeansParSoA.cpp || cmake_object_order_depends_target_my_kmeans
+  DEP_FILE = CMakeFiles\my_kmeans.dir\kMeansParSoA.cpp.obj.d
+  FLAGS = -g -std=gnu++17 -fopenmp
+  OBJECT_DIR = CMakeFiles\my_kmeans.dir
+  OBJECT_FILE_DIR = CMakeFiles\my_kmeans.dir
+
 build CMakeFiles/my_kmeans.dir/calculateDistanceSquare.cpp.obj: CXX_COMPILER__my_kmeans_unscanned_Debug C$:/Users/matti/Desktop/UNIVERSITA/parallel/Ex1/calculateDistanceSquare.cpp || cmake_object_order_depends_target_my_kmeans
   DEP_FILE = CMakeFiles\my_kmeans.dir\calculateDistanceSquare.cpp.obj.d
   FLAGS = -g -std=gnu++17 -fopenmp
@@ -93,7 +105,7 @@ build CMakeFiles/my_kmeans.dir/dataLoader.cpp.obj: CXX_COMPILER__my_kmeans_unsca
 #############################################
 # Link the executable my_kmeans.exe
 
-build my_kmeans.exe: CXX_EXECUTABLE_LINKER__my_kmeans_Debug CMakeFiles/my_kmeans.dir/main.cpp.obj CMakeFiles/my_kmeans.dir/kMeansSeq.cpp.obj CMakeFiles/my_kmeans.dir/kMeansPar.cpp.obj CMakeFiles/my_kmeans.dir/Point.cpp.obj CMakeFiles/my_kmeans.dir/calculateDistanceSquare.cpp.obj CMakeFiles/my_kmeans.dir/dataLoader.cpp.obj | C$:/Strawberry/c/lib/libgomp.dll.a C$:/Strawberry/c/x86_64-w64-mingw32/lib/libmingwthrd.a
+build my_kmeans.exe: CXX_EXECUTABLE_LINKER__my_kmeans_Debug CMakeFiles/my_kmeans.dir/main.cpp.obj CMakeFiles/my_kmeans.dir/kMeansSeq.cpp.obj CMakeFiles/my_kmeans.dir/kMeansPar.cpp.obj CMakeFiles/my_kmeans.dir/Point.cpp.obj CMakeFiles/my_kmeans.dir/DatasetSoA.cpp.obj CMakeFiles/my_kmeans.dir/kMeansParSoA.cpp.obj CMakeFiles/my_kmeans.dir/calculateDistanceSquare.cpp.obj CMakeFiles/my_kmeans.dir/dataLoader.cpp.obj | C$:/Strawberry/c/lib/libgomp.dll.a C$:/Strawberry/c/x86_64-w64-mingw32/lib/libmingwthrd.a
   FLAGS = -g
   LINK_LIBRARIES = C:/Strawberry/c/lib/libgomp.dll.a  C:/Strawberry/c/x86_64-w64-mingw32/lib/libmingwthrd.a  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\my_kmeans.dir

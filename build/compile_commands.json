@@ -25,6 +25,18 @@
 },
 {
   "directory": "C:/Users/matti/Desktop/UNIVERSITA/parallel/Ex1/build",
+  "command": "C:\\Strawberry\\c\\bin\\g++.exe -g -std=gnu++17 -fopenmp -o CMakeFiles\\my_kmeans.dir\\DatasetSoA.cpp.obj -c C:\\Users\\matti\\Desktop\\UNIVERSITA\\parallel\\Ex1\\DatasetSoA.cpp",
+  "file": "C:\\Users\\matti\\Desktop\\UNIVERSITA\\parallel\\Ex1\\DatasetSoA.cpp",
+  "output": "CMakeFiles\\my_kmeans.dir\\DatasetSoA.cpp.obj"
+},
+{
+  "directory": "C:/Users/matti/Desktop/UNIVERSITA/parallel/Ex1/build",
+  "command": "C:\\Strawberry\\c\\bin\\g++.exe -g -std=gnu++17 -fopenmp -o CMakeFiles\\my_kmeans.dir\\kMeansParSoA.cpp.obj -c C:\\Users\\matti\\Desktop\\UNIVERSITA\\parallel\\Ex1\\kMeansParSoA.cpp",
+  "file": "C:\\Users\\matti\\Desktop\\UNIVERSITA\\parallel\\Ex1\\kMeansParSoA.cpp",
+  "output": "CMakeFiles\\my_kmeans.dir\\kMeansParSoA.cpp.obj"
+},
+{
+  "directory": "C:/Users/matti/Desktop/UNIVERSITA/parallel/Ex1/build",
   "command": "C:\\Strawberry\\c\\bin\\g++.exe -g -std=gnu++17 -fopenmp -o CMakeFiles\\my_kmeans.dir\\calculateDistanceSquare.cpp.obj -c C:\\Users\\matti\\Desktop\\UNIVERSITA\\parallel\\Ex1\\calculateDistanceSquare.cpp",
   "file": "C:\\Users\\matti\\Desktop\\UNIVERSITA\\parallel\\Ex1\\calculateDistanceSquare.cpp",
   "output": "CMakeFiles\\my_kmeans.dir\\calculateDistanceSquare.cpp.obj"

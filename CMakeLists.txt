@@ -18,6 +18,8 @@ set(SOURCES
     kMeansSeq.cpp 
     kMeansPar.cpp
     Point.cpp 
+    DatasetSoA.cpp
+    kMeansParSoA.cpp
     calculateDistanceSquare.cpp
     dataLoader.cpp
 )

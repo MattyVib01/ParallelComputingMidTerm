@@ -1,14 +1,11 @@
 # ninja log v6
 71	686	7948647605265733	CMakeFiles/my_kmeans.dir/calculateDistanceSquare.cpp.obj	3d9ab52e64c1981b
-56	1254	7948666516376142	CMakeFiles/my_kmeans.dir/main.cpp.obj	9cd831e0177ef58
+52	1586	7953769151250713	CMakeFiles/my_kmeans.dir/main.cpp.obj	9cd831e0177ef58
 65	710	7948647605197638	CMakeFiles/my_kmeans.dir/Point.cpp.obj	243b72c3dfda2812
-1256	1542	7948669693599637	my_kmeans.exe	30985e7d322b8e9e
+666	832	7953755583504918	my_kmeans.exe	30985e7d322b8e9e
 51	1287	7948647604969639	CMakeFiles/my_kmeans.dir/kMeansSeq.cpp.obj	77f5a614c96f6819
-58	1319	7948647605137130	CMakeFiles/my_kmeans.dir/kMeansPar.cpp.obj	93a789efff201dd
-55	1255	7948669681597189	CMakeFiles/my_kmeans.dir/dataLoader.cpp.obj	e417197476580be0
-206	2782	7950302427731703	CMakeFiles/my_kmeans.dir/main.cpp.obj	9cd831e0177ef58
-410	2791	7950302429759312	CMakeFiles/my_kmeans.dir/dataLoader.cpp.obj	e417197476580be0
-2791	3507	7950302453572671	my_kmeans.exe	30985e7d322b8e9e
-54	2005	7950345848849273	CMakeFiles/my_kmeans.dir/main.cpp.obj	9cd831e0177ef58
+61	1450	7953769151352733	CMakeFiles/my_kmeans.dir/kMeansPar.cpp.obj	93a789efff201dd
 464	2025	7950345852990857	CMakeFiles/my_kmeans.dir/dataLoader.cpp.obj	e417197476580be0
-2025	2488	7950345868601733	my_kmeans.exe	30985e7d322b8e9e
+51	424	7953769894855518	CMakeFiles/my_kmeans.dir/DatasetSoA.cpp.obj	3c317eaf952a92f9
+62	935	7953769894970005	CMakeFiles/my_kmeans.dir/kMeansParSoA.cpp.obj	973e3587ae1867da
+935	1236	7953769903701664	my_kmeans.exe	33ca5054e773c2f5
