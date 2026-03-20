@@ -8,6 +8,20 @@
 \usepackage{amssymb}
 
 \usepackage{url}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset{
+  language=C++,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{orange},
+  commentstyle=\color{green!50!black},
+  stringstyle=\color{red},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  breaklines=true,
+  frame=single,
+}
 
 % Include other packages here, before hyperref.
 
@@ -29,7 +43,7 @@
 \title{KMeans OpenMP}
 
 \author{Mattia Baroncelli\\
-E-mail address\\
+7166468\\
 {\tt\small mattia.baroncelli@edu.unifi.it}
 % For a paper whose authors are all at the same institution,
 % omit the following lines up until the closing ``}''.
@@ -43,38 +57,72 @@ E-mail address\\
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-   The ABSTRACT is to be in fully-justified italicized text, at the top
-   of the left-hand column, below the author and affiliation
-   information. Use the word ``Abstract'' as the title, in 12-point
-   Times, boldface type, centered relative to the column, initially
-   capitalized. The abstract is to be in 10-point, single-spaced type.
-   Leave two blank lines after the Abstract, then begin the main text.
+   Il progetto si concentra sull'implementazione dell'algoritmo K-Means, in particolare il confronto fra la versione sequenziale e quella parallela. K-Means è un algoritmo per l'apprendimento non supervisionato, che permette dato un insieme di punti appartenenti ad uno stesso spazio dimensionale e un valore K, di partizionare l'insieme di punti in K diversi cluster. K-Means crea i cluster assegnando ad ogni punto il centroide più vicino, andando così a minimizzare la varianza all'interno di ogni gruppo. Lo scopo principale del progetto è quindi di implementare una versione parallela dell'algoritmo tramite il framework OpenMP, valutando i vantaggi rispetto alla versione sequenziale. Si andrà inoltre a ricercare la migliore soluzione al problema della parallelizzazione.
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
-\noindent\large\textbf{Future Distribution Permission}\\
+\noindent\textbf{Future Distribution Permission}\\
 \indent The author(s) of this report give permission for this document to be distributed to Unifi-affiliated students taking future courses.
 
 \section{Introduction}
 
-Please follow the steps outlined below.
-\vspace{3cm}
+L'algoritmo K-Means è un metodo che permette di formare cluster a partire da un dato insieme di punti. Questo viene fatto dando in input all'algoritmo un dataset di punti e un valore K che rappresenta il numero di cluster in cui saranno divisi i punti. L'algoritmo si basa sull'utilizzo dei centroidi, ossia K punti appartenenti al dataset, che durante l'esecuzione dell'algoritmo si andranno a spostare in base all'assegnazione dei punti del dataset ad ogni cluster. Al termine dell'algoritmo ogni punto sarà assegnato al cluster che minimizza la distaza con il proprio centroide. L'algoritmo è composto da tre fasi che vedremo nella prossima sezione ed è un algoritmo molto noto in letteratura, poichè nonostante la sua semplicità nell'implementazione risulta essere molto efficace. Nonostante questo però presenta alcune criticità, infatti all'aumentare della dimensionalità dei punti selezionati, sia per quanto riguarda il numero che per lo spazio, i tempi di esecuzione si dilatano notevolmente. Con lo scopo di superare queste limitazioni ho implementato la versione parallela dell'algoritmo. 
+Attraverso il framework \textit{OpenMP} è possibile parallelizzare parte del codice, e tramite questo andremo a valutare quanto l'impatto della parallelizzazione migliori le prestazioni dell'algoritmo.
+\begin{figure}[t]
+\begin{center}
+   \includegraphics[width=0.8\linewidth]{img1.jpg}
+\end{center}
+   \caption{Esempio di clustering K-Means con evidenziate le partizioni dei punti.}
+\label{fig:kmeans_example}
+\end{figure}
+
 
 %-------------------------------------------------------------------------
-\subsection{Language}
+\section{Implementazione}
+L'algoritmo K-Means è costituito da tre fasi principali, ognuna contraddistinta da step distinti:
+\begin{itemize}
+   \item Inizializzazione dei centroidi: in questa fase si andranno a selezionare casualmente K punti dal dataset che saranno utilizzati come centroidi.
+   \item Assegnazione dei punti ai cluster: l'algoritmo andrà a cercare per ogni punto il centroide a lui più vicino e di conseguenza gli assegnerà il corrispondente cluster.
+   \item Aggiornamento dei centroidi: una volta assegnati tutti i punti verrà fatta una media delle posizioni dei punti appartenente ad ogni cluster per aggiornare il relativo centroide.
+\end{itemize}
+Sull'implementazione di ogni fase ci concentreremo di seguito quando parleremo nel dettaglio del confronto fra versione sequenziale e parallela.
+Per quanto riguarda le condizioni di convergenza dell'algoritmo esistono varie scelte, io ho preferito interrompere l'algoritmo quando nessun punto ha cambiato cluster dopo un'iterazione di assegnazione dei punti ai rispettivi gruppi.
 
-All manuscripts must be in English.
+\subsection{OpenMP directives}
+Prima di iniziare con l'analisi del codice è utile vedere le direttive che andrò ad utilizzare per parallelizzare l'algoritmo nel progetto. Grazie a questo particolare tipo di istruzioni presenti in \textit{OpenMP} è possibile creare multipli threads così da velocizzare l'esecuzione del codice, di seguito le direttive che ho usato. 
+\begin{itemize}
+   \item \lstinline{#pragma omp parallel}: Grazie a questa istruzione è possibile generare multipli threads all'interno del programma.
+   \item \lstinline{#pragma omp for} : the \textit{omp for} directive instructs the compiler to distribute loop iterations within the team of threads that encounters this work-sharing construct.
+   \item \lstinline{#pragma omp critical}: The \textit{omp critical} directive identifies a section of code that must be executed by a single thread at a time.
+\end{itemize}
+Grazie a queste direttive non solo riusciremo a parallelizzare il codice, ma anche ad evitare problemi che potrebbero nascere proprio a causa della parallelizzazione.
+
+\subsection{Sequential version}
+Iniziamo l'analisi con la versione sequenziale dell'algoritmo K-Means. L'algoritmo è molto noto in letteratura e come detto prima è formato da tre parti principali. L'algoritmo è stato scritto in modo tale da potersi adattare alla versione parallela con poche aggiunte (principalmente le direttive \textit{OpenMP}).
+
+\begin{lstlisting}[caption={Esempio di parallelizzazione del ciclo di assegnamento.}, label={lst:openmp}]
+#pragma omp parallel for private(i, j) shared(points, centroids)
+for (i = 0; i < num_points; i++) {
+    double min_dist = __DBL_MAX__;
+    for (j = 0; j < K; j++) {
+        double d = euclidean_distance(points[i], centroids[j]);
+        if (d < min_dist) {
+            min_dist = d;
+            points[i].cluster = j;
+        }
+    }
+}
+\end{lstlisting}
+
+
+
+
+
+
 
 %-------------------------------------------------------------------------
 \subsection{The ruler}
-The \LaTeX\ style defines a printed ruler which should be present in the
-version submitted for review.  The ruler is provided in order that
-reviewers may comment on particular lines in the paper without
-circumlocution.  If you are preparing a document using a non-\LaTeX\
-document preparation system, please arrange for an equivalent ruler to
-appear on the final output pages.  The presence or absence of the ruler
-should not change the appearance of any other content on the page.  The
-camera ready copy should not contain a ruler.
+
 
 \subsection{Mathematics}
 
@@ -125,7 +173,7 @@ chronological) order, so prefer \cite{Alpher03,Alpher02,Authors06} to
 \end{center}
    \caption{Example of a short caption, which should be centered.}
 \label{fig:short}
-\end{figure*}
+\end{figure*} 
 
 %------------------------------------------------------------------------
 \section{Formatting your paper}
