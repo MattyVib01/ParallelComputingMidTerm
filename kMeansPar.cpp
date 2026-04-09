@@ -39,7 +39,7 @@ void kMeansPar(std::vector<Point>& points, int K, int max_iterations) {
 
             if (points[i].cluster != best_cluster) {
                 points[i].cluster = best_cluster;
-                changed = true; // Sicuro grazie alla reduction
+                changed = true;
             }
         }
 

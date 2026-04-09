@@ -82,7 +82,7 @@ Attraverso il framework \textit{OpenMP} è possibile parallelizzare parte del co
 L'algoritmo K-Means è costituito da tre fasi principali, ognuna contraddistinta da step distinti:
 \begin{itemize}
    \item Inizializzazione dei centroidi: in questa fase si andranno a selezionare casualmente K punti dal dataset che saranno utilizzati come centroidi.
-   \item Assegnazione dei punti ai cluster: l'algoritmo andrà a cercare per ogni punto il centroide a lui più vicino e di conseguenza gli assegnerà il corrispondente cluster.
+   \item Assegnamento dei punti ai cluster: l'algoritmo andrà a cercare per ogni punto il centroide a lui più vicino e di conseguenza gli assegnerà il corrispondente cluster.
    \item Aggiornamento dei centroidi: una volta assegnati tutti i punti verrà fatta una media delle posizioni dei punti appartenente ad ogni cluster per aggiornare il relativo centroide.
 \end{itemize}
 Sull'implementazione di ogni fase ci concentreremo di seguito quando parleremo nel dettaglio del confronto fra versione sequenziale e parallela.
@@ -100,19 +100,211 @@ Grazie a queste direttive non solo riusciremo a parallelizzare il codice, ma anc
 \subsection{Sequential version}
 Iniziamo l'analisi con la versione sequenziale dell'algoritmo K-Means. L'algoritmo è molto noto in letteratura e come detto prima è formato da tre parti principali. L'algoritmo è stato scritto in modo tale da potersi adattare alla versione parallela con poche aggiunte (principalmente le direttive \textit{OpenMP}).
 
-\begin{lstlisting}[caption={Esempio di parallelizzazione del ciclo di assegnamento.}, label={lst:openmp}]
-#pragma omp parallel for private(i, j) shared(points, centroids)
-for (i = 0; i < num_points; i++) {
-    double min_dist = __DBL_MAX__;
-    for (j = 0; j < K; j++) {
-        double d = euclidean_distance(points[i], centroids[j]);
-        if (d < min_dist) {
-            min_dist = d;
-            points[i].cluster = j;
-        }
-    }
+\begin{lstlisting}[caption={Fase di assegnamento della versione sequenziale}, label={lst:openmp}]
+for (int i = 0; i < n; i++) {  
+   double min_dist = std::numeric_limits<double>::max(); 
+   int best_cluster = -1; 
+
+   for (int j = 0; j < K; ++j) { 
+         double dist = calculateDistanceSquare(points[i].values, centroids[j]);  
+         if (dist < min_dist) { 
+            min_dist = dist;  
+            best_cluster = j;    
+         }
+   }
+   if (points[i].cluster != best_cluster) {
+         points[i].cluster = best_cluster;
+         changed = true; 
+   }
 }
 \end{lstlisting}
+
+Il primo blocco di codice che andiamo ad analizzare riguarda la fase di assegnamento di ogni punto al proprio centroide. La fase di selezione dei centroidi, infatti, non è molto interessante per l'analisi e quindi abbiamo preferito non riportarla.
+Nel codice si andrà ad effettuare un ciclo per ogni punto e per ogni centroide si andrà a calcolare la distanza fra quest'ultimo e il punto, andando di volta in volta ad aggiornare il parametro \lstinline{min_dist} fino a trovare il centroide che minimizza la distanza con il punto selezionato. Infine se il centroide ha cambiato cluster, si và ad aggiornare il cluster e a cambiare il valore di un flag necessario per verificare la condizione di arresto. Andiamo adesso a vedere la parte del codice che riguarda il calcolo dei nuovi centroidi.
+
+\begin{lstlisting}[caption={Fase di aggiornamento dei centroidi della versione sequenziale}, label={lst:openmp}]
+std::vector<std::vector<double>> new_centroids_sum(K, std::vector<double>(dimensions, 0.0));   
+        std::vector<int> cluster_counts(K, 0);  
+for (int i = 0; i < n; ++i) {   
+   int cluster_id = points[i].cluster;     
+   cluster_counts[cluster_id]++;       
+   for (int d = 0; d < dimensions; ++d) {  
+         new_centroids_sum[cluster_id][d] += points[i].values[d];  
+         }
+}
+
+for (int j = 0; j < K; ++j) {   
+   if (cluster_counts[j] > 0) {
+         for (int d = 0; d < dimensions; ++d) {
+            centroids[j][d] = new_centroids_sum[j][d] / cluster_counts[j];
+         }
+   }
+}
+\end{lstlisting}
+
+In questo blocco vengono innanzitutto inizializzati due parametri: una matrice che si occuperà di conservare le somme dei punti che appartengono ad un particolare centroide per ognuna delle sue dimensioni e un vettore che conta il numero di punti all'interno di un cluster.
+Si ha quindi un ciclo su ogni punto, che andrà ad incrementare il contatore del relativo cluster e andrà ad aggiornare la matrice delle somme.
+Una volta aggiornati questi due parametri per ogni punto si andrà ad effettuare la media dividendo i valori all'interno della matrice per il vettore delle somme di ogni centroide, ottenendo così le coordinate dei centroidi aggiornate. Senza far vedere il codice ritengo corrette citare la condizione di arresto che si verifica quando dopo un'iterazione dell'algoritmo nessun punto ha cambiato cluster rispetto all'iterazione precedente, ed è implementato con un semplice ciclo \lstinline{while}.
+
+
+\subsection{Parallel version}
+Dopo aver implementato la versione sequenziale del co-
+dice vediamo adesso come è possibile passare ad una ver-
+sione parallela.
+Le versioni parallele sviluppate in realtà sono due, che sfruttano due approcci diversi della parallelizzazione:
+\begin{itemize}
+   \item Array of Structures (AoS): E' l'approccio più vicino a quanto implementato con la versione sequenziale. I dati sono organizzati in memoria in modo che il singolo punto abbia le proprie coordinate spazialmente vicine.
+   \item Structure of Arrays (SoA): Questo approccio separa la singole componenti dei punti in array distinti, permettendo ai thread di leggere blocchi contigui di memoria durante il calcolo delle distanze.
+\end{itemize}
+A livello teorico quindi l'approccio SoA dovrebbe darci risultati migliori in termini di speed-up rispetto alla versione sequenziale, vedremo nella sezione degli Esperimenti se questo sarà confermato.
+Soffermiamoci adesso ad analizzare entrambe le versioni di codice che abbiamo implementato.
+
+\subsubsection{Array of Structures}
+Come detto prima questa prima versione parallela non si discosta molto da quella sequenziale, grazie all'approccio usato in precedenza è sufficiente adattare il codice prestando attenzione ad alcune problemi derivati dalla parallelizzazione.
+Andiamo innanzitutto a valutare la struttura della classe \lstinline{Point}, che risulta esere la stessa utilizzata nella versione sequenziale
+\begin{lstlisting}[caption={Implementazione dei punti nella versione AoS}, label={lst:openmp}]
+struct Point {
+    int cluster;
+    std::vector<double> values;
+
+    Point(std::vector<double> v);
+};
+\end{lstlisting}
+Ogni punto è quindi formato dalle proprie coordinate di appartenenza e dall'ID del proprio cluster, che è inizializzato a -1 nella fase di inizializzazione dei punti.
+Andiamo quindi adesso ad analizzare il codice che assegna i punti ai cluster
+
+\begin{lstlisting}[caption={Fase di assegnamento parallela AoS}, label={lst:openmp}]
+#pragma omp parallel for reduction(||:changed)
+for (int i = 0; i < n; i++) {
+   double min_dist = std::numeric_limits<double>::max();
+   int best_cluster = -1;
+
+   for (int j = 0; j < K; ++j) {
+         double dist = calculateDistanceSquare(points[i].values, centroids[j]);
+         if (dist < min_dist) {
+            min_dist = dist;
+            best_cluster = j;
+         }
+   }
+
+   if (points[i].cluster != best_cluster) {
+         points[i].cluster = best_cluster;
+         changed = true;
+   }
+}
+\end{lstlisting}
+
+All'atto pratico il codice risulta essere uguale alla versione sequenziale, con l'aggiunta della direttiva \lstinline{#pragma omp parallel for reduction(||:changed)}, il costrutto serve a parallelizzare il ciclo for sottostante che effettua il calcolo delle distanze fra punti e centroidi e assegna ogni punto a un centroide, in questo caso le variabili \lstinline{min_dist} e \lstinline{best_cluster} venendo dichiarate all'interno del ciclo diventano private per il thread che sta eseguendo. Lo stesso non si può dire del flag \lstinline{changed} che viene inizializzato fuori dal ciclo e che può portare ad un comportamento indefinito. Se due thread cercano di scrivere nello stesso momento in quella cella di memoria possono verificarsi rallentamenti o nella peggiore delle ipotesi la corruzione del dato e di conseguenza un funzionamento errato dell'algoritmo (potrebbe fermarsi prima). Per risolvere questo problema utilizziamo il costrutto reduction. OpenMP andrà a creare delle copie locali della variabile \lstinline{changed}. Una volta terminato il ciclo OpenMP fonde le variabili locali tramite l'operatore OR (che gli abbiamo passato). Il risultato pertanto sarà lo stesso ma evitando il problema citato in precedenza.
+
+
+\begin{lstlisting}[caption={Fase di aggioramento dei centroidi parallela AoS}, label={lst:openmp}]
+#pragma omp parallel
+        {
+std::vector<std::vector<double>> local_centroids_sum(K, std::vector<double>(dimensions, 0.0));
+std::vector<int> local_cluster_counts(K, 0);
+
+#pragma omp for
+for (int i = 0; i < n; ++i) {
+      int cluster_id = points[i].cluster;
+      local_cluster_counts[cluster_id]++;
+      for (int d = 0; d < dimensions; ++d) {
+         local_centroids_sum[cluster_id][d] += points[i].values[d];
+      }
+}
+
+
+#pragma omp critical
+{
+      for (int j = 0; j < K; ++j) {
+         cluster_counts[j] += local_cluster_counts[j];
+         for (int d = 0; d < dimensions; ++d) {
+            new_centroids_sum[j][d] += local_centroids_sum[j][d];
+         }
+      }
+}
+} 
+
+for (int j = 0; j < K; ++j) {
+if (cluster_counts[j] > 0) {
+      for (int d = 0; d < dimensions; ++d) {
+         centroids[j][d] = new_centroids_sum[j][d] / cluster_counts[j];
+      }
+}
+}
+\end{lstlisting}
+
+La fase di aggiornamento dei centroidi i apre con, oltre alla dichiarazione degli accumulatori di somme e numero di punti, anche con quella di accumulatori locali per ogni cluster, che assegneremo ad ogni thread. Anche stavolta tramite la direttiva \lstinline{#pragma omp for}, andremo a parallelizzare il ciclo. In manier analoga a prima ogni thread andrà ad aggiornare i propri accumulatori. Una volta terminato l'aggiornamento degli accumulatori per ogni punto, è necessario aggiornare gli accumulatori globali, andandogli ad assegnare la somma dei rispettivi contatori parziali. Questa operazione può portare al verificarsi di una race condition, dove due threads leggono un valore e provano a sovrascrivere gli accumulatori globali con i propri valori, rischiando di portare a risultati errati. Per risolvere questo problema abbiamo adottato il costrutto \lstinline{#pragma omp critical} che assicura che un solo thread alla volta aggiorni i contatori globali.
+
+\subsubsection{Structure of Arrays}
+Andiamo a vedere in questa sezione come è possibile implementare l'algoritmo con il paradigma SoA. Di seguito il codice che illustra la struttura l'implementazione dei punti con questa tecnica.
+
+\begin{lstlisting}[caption={struct \textit Implementazione dei punti nella versione SoA}, label={lst:openmp}]
+struct DatasetSoA {
+    int num_points;
+    int dimensions;
+   
+    std::vector<double> coords; 
+    std::vector<int> clusters;  
+};
+
+\end{lstlisting}
+
+Il dataset viene implementato tramite la struct DatasetSoA che ha come attributi, il numero totale di punti e di dimensioni, il vettore che rappresenta le coordinate dei punti e un array separato per etichette dei clusters. La funzione \lstinline{convertToSoA} si occuperà di convertire i punti passati nel formato AoS, in questo formato, tramite un ciclo for. 
+
+\begin{lstlisting}[caption={ciclo for all'interno di convertToSoA}, label={lst:openmp}]
+for (int i = 0; i < soa.num_points; ++i) {
+   soa.clusters[i] = aos_dataset[i].cluster;
+   for (int d = 0; d < soa.dimensions; ++d) {
+      // Indice piatto: (riga * numero_colonne) + colonna
+      soa.coords[i * soa.dimensions + d] = aos_dataset[i].values[d];
+   }
+}
+\end{lstlisting}
+
+In particolare la funzione prende in input il dataset in formato AoS e innanzitutto assegna il medesimo cluster di ogni punto alla rappresentazione in formato SoA, successivamente attraverso la tecnica del flat index, costruisce l'array di coordinate. In questo modo è possibile passare facilmente dalla rappresentazione AoS a SoA. Anche l'algoritmo avrà necessità di essere adattato, in particolare, oltre a una diversa versione dell'algoritmo per calcolare la distanza, che sfrutta anch'esso il flat index; abbiamo una differenza sostanziale nella terza fase dell'algoritmo.
+
+\begin{lstlisting}[caption={Fase di aggioramento dei centroidi SoA}, label={lst:openmp}]
+std::vector<double> new_centroids_sum(K * dims, 0.0);
+std::vector<int> cluster_counts(K, 0);
+
+#pragma omp parallel
+{
+std::vector<double> local_centroids_sum(K * dims, 0.0);
+std::vector<int> local_cluster_counts(K, 0);
+
+for (int i = 0; i < n; ++i) {
+   int cluster_id = dataset.clusters[i];
+   local_cluster_counts[cluster_id]++;
+   
+   for (int d = 0; d < dims; ++d) {
+      local_centroids_sum[cluster_id * dims + d] += dataset.coords[i * dims + d];
+   }
+}
+
+{
+   for (int j = 0; j < K; ++j) {
+      cluster_counts[j] += local_cluster_counts[j];
+      for (int d = 0; d < dims; ++d) {
+         new_centroids_sum[j * dims + d] += local_centroids_sum[j * dims + d];
+      }
+   }
+}
+} 
+
+for (int j = 0; j < K; ++j) {
+if (cluster_counts[j] > 0) {
+   for (int d = 0; d < dims; ++d) {
+      centroids[j * dims + d] = new_centroids_sum[j * dims + d] / cluster_counts[j];
+   }
+}
+}
+\end{lstlisting}
+
+Nelle operazioni compiute il codice è molto simile a quello scritto per la versione AoS. Fin da subito però è possibile notare come sia gli accumulatori globali che quelli locali siano cambiate. In questa versione infatti si richiede per le somme dei centroidi una allocazione per un blocco continuo, al contrario delle metrici allocate in precedenza. Inoltre il costrutto di parallelizzazione è diventato \lstinline{#pragma omp for schedule(static)}, che forza l'assegnazione dei blocchi contigui ad uno stesso thread (cosa che è stata aggiunta anche alla fase di assegnamento dei punti). Infine sia il calcolo della somma dei centroidi e della media finale vengono fatte utilizzando la rappresentazione piatta.
+
+
+
+
 
 
 
@@ -121,6 +313,41 @@ for (i = 0; i < num_points; i++) {
 
 
 %-------------------------------------------------------------------------
+
+\section{Esperimenti}
+Iniziamo adesso la sezione del report che riguarda gli
+esperimenti effettuati, abbiamo visto come i tre diversi tipi
+di implementazione variano a livello di codice, adesso vediamo quanto variano a livello di prestazioni. Per farlo è necessario partire innanzitutto dalla creazione del dataset.
+
+\subsection{Dataset}
+I dataset sono stati creati attraverso una funzione Python creata appositamente \lstinline{generate_dataset}. La funzione prende in input:
+\begin{itemize}
+   \item Numero di punti (N)
+   \item Numero di cluster (K)
+   \item Dimensione del piano su cui giaccioni i punti
+   \item Parametro di dispersione dei punti
+\end{itemize}
+e restituisce in output un dataset in formato csv, che contiene sulle righe le coordinate di ogni punto. Poichè k-means è un algoritmo non supervisionato nel dataset non è presente il cluster di appartenenza, nonostante ciò il numero di cluster è un parametro in input per creare dataset che abbiamo punti che vadano a formare cluster definiti. Per convertire i punti in formato SoA verrà poi usata la funzione apposita definita nella sezione precedente; la conversione come era logico aspettarsi non concorrerà alla misurazione del tempo di esecuzione dell'algoritmo.
+
+
+\subsection{Aumento N AoS}
+%COme variabili ho K,N, numCore, AosSoA, Tempo/SPeedup
+Iniziamo quindi gli esperimenti valutando le prestazione della tecnica Structure of Arrays su vari dataset. Il primo esperimento verrà fatto aumentando la dimensione del numero di punti (N), mantendendo fermo il numero di cluster K a 10. Andremo inoltre ad aumentare gradualmente il numero threads in esecuzione, per verificare se c'è un miglioramento delle performace all'aumentare dei threads.
+
+%Grafico speed up x:numthreads y:speedup colorato:dimdataset
+
+\subsection{Aumento K}
+
+
+
+
+
+
+
+
+%----------------------------------------------------------
+\section{Conclusioni}
+%----------------------------------------------------------
 \subsection{The ruler}
 
 
