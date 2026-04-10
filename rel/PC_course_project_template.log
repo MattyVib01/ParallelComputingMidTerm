@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.10.10)  9 APR 2026 12:45
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2025.10.10)  10 APR 2026 13:41
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -321,35 +321,62 @@ Underfull \hbox (badness 2020) in paragraph at lines 197--198
 \OT1/ptm/m/n/10 Per ri-sol-vere questo prob-lema uti-lizzi-amo il costrutto
  []
 
-[3] [4] [5]
+[3] [4]
+<grafico_speedup_n_aos.png, id=19, 715.9548pt x 426.6339pt>
+File: grafico_speedup_n_aos.png Graphic file (type png)
+<use grafico_speedup_n_aos.png>
+Package pdftex.def Info: grafico_speedup_n_aos.png  used on input line 338.
+(pdftex.def)             Requested size: 189.70947pt x 113.04442pt.
+<grafico_speedup_k_aos.png, id=21, 715.9548pt x 426.6339pt>
+File: grafico_speedup_k_aos.png Graphic file (type png)
+<use grafico_speedup_k_aos.png>
+Package pdftex.def Info: grafico_speedup_k_aos.png  used on input line 349.
+(pdftex.def)             Requested size: 189.70947pt x 113.04442pt.
 
-LaTeX Warning: Reference `fig:onecol' on page 6 undefined on input line 454.
+Underfull \hbox (badness 1365) in paragraph at lines 355--356
+[]\OT1/ptm/m/n/10 Con il grafico in Figura 3[], an-di-amo a va-l-utare le
+ []
 
-[6] (PC_course_project_template.bbl) [7] (PC_course_project_template.aux)
+[5 <./grafico_speedup_n_aos.png>]
+<grafico_speedup_n_soa.png, id=26, 715.9548pt x 426.6339pt>
+File: grafico_speedup_n_soa.png Graphic file (type png)
+<use grafico_speedup_n_soa.png>
+Package pdftex.def Info: grafico_speedup_n_soa.png  used on input line 363.
+(pdftex.def)             Requested size: 189.70947pt x 113.04442pt.
+<grafico_speedup_k_soa.png, id=27, 715.9548pt x 426.6339pt>
+File: grafico_speedup_k_soa.png Graphic file (type png)
+<use grafico_speedup_k_soa.png>
+Package pdftex.def Info: grafico_speedup_k_soa.png  used on input line 375.
+(pdftex.def)             Requested size: 189.70947pt x 113.04442pt.
+ [6 <./grafico_speedup_k_aos.png> <./grafico_speedup_n_soa.png> <./grafico_speedup_k_soa.png>]
+Underfull \hbox (badness 3375) in paragraph at lines 440--441
+\OT1/ptm/m/n/10 la par-al-leliz-zazione mostra il suo lato migliore.
+ []
+
+[7
+
+] (PC_course_project_template.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
  ***********
 
 
-LaTeX Warning: There were undefined references.
-
-
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 5438 strings out of 474486
- 78737 string characters out of 5743754
+ 5437 strings out of 474486
+ 79056 string characters out of 5743754
  2264542 words of memory out of 5000000
- 27639 multiletter control sequences out of 15000+600000
- 589871 words of font info for 101 fonts, out of 8000000 for 9000
+ 27648 multiletter control sequences out of 15000+600000
+ 583072 words of font info for 89 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  72i,9n,79p,1349b,1654s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb><C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on PC_course_project_template.pdf (7 pages, 218488 bytes).
+<C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb><C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
+Output written on PC_course_project_template.pdf (7 pages, 902304 bytes).
 PDF statistics:
- 78 PDF objects out of 1000 (max. 8388607)
+ 57 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 6 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 26 words of extra memory for PDF output out of 10000 (max. 10000000)
 

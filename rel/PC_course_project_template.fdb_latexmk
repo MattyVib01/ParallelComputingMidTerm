@@ -1,13 +1,5 @@
 # Fdb version 4
-["bibtex PC_course_project_template"] 1775731500.21187 "PC_course_project_template.aux" "PC_course_project_template.bbl" "PC_course_project_template" 1775731517.23209 0
-  "./egbib.bib" 1773331635 948 6db8b0f38be5de90ac9f8009b713f78d ""
-  "./ieee.bst" 1773331635 20752 f9cd22458ca68af2567100f1aed905e8 ""
-  "PC_course_project_template.aux" 1775731511 5045 fd903d6b1bab9813d86e46bf32b7e100 "pdflatex"
-  (generated)
-  "PC_course_project_template.bbl"
-  "PC_course_project_template.blg"
-  (rewritten before read)
-["pdflatex"] 1775731500.6929 "c:/Users/matti/Desktop/UNIVERSITA/parallel/Ex1/rel/PC_course_project_template.tex" "PC_course_project_template.pdf" "PC_course_project_template" 1775731517.24457 0
+["pdflatex"] 1775821263.53134 "c:/Users/matti/Desktop/UNIVERSITA/parallel/Ex1/rel/PC_course_project_template.tex" "PC_course_project_template.pdf" "PC_course_project_template" 1775821266.10652 0
   "C:/Users/matti/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1773331733 82507 a9eef8696c92627b87e9975edea03b2a ""
   "C:/Users/matti/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1760089577 24225047 511c4c92957775ce37541764e35af610 ""
   "C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc" 1458473887 4993 80dc9bab7f31fb78a000ccfed0e27cab ""
@@ -40,15 +32,6 @@
   "C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmsy10.tfm" 1136765053 1124 6c73e740cf17375f03eec0ee63599741 ""
   "C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmsy6.tfm" 1136765053 1116 933a60c408fc0a863a92debe84b2d294 ""
   "C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmsy8.tfm" 1136765053 1120 8b7d695260f3cff42e636090a8002094 ""
-  "C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmti10.tfm" 1136765053 1480 aa8e34af0eb6a2941b776984cf1dfdc4 ""
-  "C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmti7.tfm" 1136765053 1492 86331993fe614793f5e7e755835c31c5 ""
-  "C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/tfm/public/cm/cmti8.tfm" 1136765053 1504 1747189e0441d1c18f3ea56fafc1c480 ""
-  "C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb" 1247596667 36299 5f9df58c2139e7edcf37c8fca4bd384d ""
-  "C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi7.pfb" 1247596667 36281 c355509802a035cadc5f15869451dcee ""
-  "C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1247596667 35752 024fb6c41858982481f6968b5fc26508 ""
-  "C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb" 1247596667 32762 7fee39e011c23b3589931effd97b9702 ""
-  "C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1247596667 32569 5e5ddc8df908dea60932f3c484a54c0d ""
-  "C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb" 1247596667 37944 359e864bd06cde3b1cf57bb20757fb06 ""
   "C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb" 1136846148 45758 19968a0990191524e34e1994d4a31cb6 ""
   "C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb" 1136849748 44729 fea0975e20ec51c992338362f05f1146 ""
   "C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb" 1136849748 46026 687528a208fbfc1f00832bb96cccebbb ""
@@ -95,13 +78,16 @@
   "C:/Users/matti/AppData/Local/Programs/MiKTeX/tex/latex/tools/xspace.sty" 1700599895 4545 9f5ea23ab1c91476c42749893f790666 ""
   "C:/Users/matti/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/matti/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1700127522 55487 80a65caedd3722f4c20a14a69e785d8f ""
-  "PC_course_project_template.aux" 1775731511 5045 fd903d6b1bab9813d86e46bf32b7e100 "pdflatex"
-  "PC_course_project_template.bbl" 1775731500 682 5d431d1ced6572bf497f9f60ff467ebf "bibtex PC_course_project_template"
-  "PC_course_project_template.tex" 1775731497 29599 a0247592147c1e2fdc058fabdf2d170e ""
-  "c:/Users/matti/Desktop/UNIVERSITA/parallel/Ex1/rel/PC_course_project_template.tex" 1775731497 29599 a0247592147c1e2fdc058fabdf2d170e ""
+  "PC_course_project_template.aux" 1775821265 4435 3d737de14a6503babce3992792edf41f "pdflatex"
+  "PC_course_project_template.tex" 1775821260 28391 cede71b4af06aea1c4179e05bcf4f88c ""
+  "c:/Users/matti/Desktop/UNIVERSITA/parallel/Ex1/rel/PC_course_project_template.tex" 1775821260 28391 cede71b4af06aea1c4179e05bcf4f88c ""
   "cvpr.sty" 1773331635 8435 51b6483a72e0a50ce1e426c0920c8b85 ""
   "cvpr_eso.sty" 1773331636 3987 6aa7c08ff2621006e0603349e40a30a8 ""
   "eso-pic.sty" 1773331635 9727 d2935ae95b5cd343fcf5887ff530288d ""
+  "grafico_speedup_k_aos.png" 1775815712 225679 c87e860ef087ac1b83b9c4fbd68c3a8f ""
+  "grafico_speedup_k_soa.png" 1775815975 222488 0dd853f29208ff41b1192b7c43d0b026 ""
+  "grafico_speedup_n_aos.png" 1775814126 227272 11dbdbee0a2e4bfca7fc6cdd10c45a4b ""
+  "grafico_speedup_n_soa.png" 1775818068 250431 65e2a4231b7e95b9bd8e74893a326b66 ""
   "img1.jpg" 1774000884 63768 78e860531d707fa6df7fa096b1a246a9 ""
   (generated)
   "PC_course_project_template.aux"

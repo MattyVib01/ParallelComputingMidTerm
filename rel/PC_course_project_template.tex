@@ -330,13 +330,97 @@ I dataset sono stati creati attraverso una funzione Python creata appositamente 
 e restituisce in output un dataset in formato csv, che contiene sulle righe le coordinate di ogni punto. Poichè k-means è un algoritmo non supervisionato nel dataset non è presente il cluster di appartenenza, nonostante ciò il numero di cluster è un parametro in input per creare dataset che abbiamo punti che vadano a formare cluster definiti. Per convertire i punti in formato SoA verrà poi usata la funzione apposita definita nella sezione precedente; la conversione come era logico aspettarsi non concorrerà alla misurazione del tempo di esecuzione dell'algoritmo.
 
 
-\subsection{Aumento N AoS}
-%COme variabili ho K,N, numCore, AosSoA, Tempo/SPeedup
-Iniziamo quindi gli esperimenti valutando le prestazione della tecnica Structure of Arrays su vari dataset. Il primo esperimento verrà fatto aumentando la dimensione del numero di punti (N), mantendendo fermo il numero di cluster K a 10. Andremo inoltre ad aumentare gradualmente il numero threads in esecuzione, per verificare se c'è un miglioramento delle performace all'aumentare dei threads.
+\subsection{Array of Structures}
+Iniziamo quindi gli esperimenti valutando le prestazione della tecnica Structure of Arrays su vari dataset. Il primo esperimento verrà fatto aumentando la dimensione del numero di punti (N), mantendendo fermo il numero di cluster K a 10. Andremo inoltre ad aumentare gradualmente il numero threads in esecuzione, per verificare se c'è un miglioramento delle performace all'aumentare dei threads. Tutti gli esperimenti sono stati fatti estraendo la mediana dei risultati su un numero variabile di esecuzione.
 
-%Grafico speed up x:numthreads y:speedup colorato:dimdataset
+\begin{figure}[t]
+\begin{center}
+   \includegraphics[width=0.8\linewidth]{grafico_speedup_n_aos.png}
+\end{center}
+   \caption{Speedup della versione AoS all'aumentare del numero di punti.}
+\label{fig:speed_n_aos}
+\end{figure}
 
-\subsection{Aumento K}
+Nel grafico in Figura \ref{fig:speed_n_aos} è possibile notare come sull'asse Y sia presente il parametro \textit{Speedup} che è calcolato dividendo il tempo di esecuzione della versione sequenziale per quello della versione parallela.
+Si può osservare dal grafico blu (quello riguardante N=1000) come in questo caso la parallelizzazione non porta vantaggi degni di nota facendo ottenere uno speedup massimo di 1.20x. Aumentando la dimensione del dataset però la parallelizzazione porta dei vantaggi rilevanti. In particolare quando il numero di punti nel dataset è pari a 1 milione, già solo la parallelizzazione fra due threads porta a dimezzare i tempi di esecuzione rispetto alla versione sequenziale. Proprio in questo caso è possibile notare il miglioramento più evidente; con 8 cores le prestazioni sono quasi quadruplicate, raggiungendo uno speedup di 3.85x. E'interessante notare come all'aumentare del numero di punti da classificare la parallelizzazione porti a risultati sempre migliori.
+
+\begin{figure}[t]
+\begin{center}
+   \includegraphics[width=0.8\linewidth]{grafico_speedup_k_aos.png}
+\end{center}
+   \caption{Speedup della versione AoS all'aumentare del numero di cluster.}
+\label{fig:speed_k_aos}
+\end{figure}
+
+Con il grafico in Figura \ref{fig:speed_k_aos}, andiamo a valutare le prestazioni delle due versioni variando stavolta il numero di cluster e tenendo fisso il numero di punti a 20000. In questo caso abbiamo comportamenti diversi per i diversi valori di K. Per K=50 infatti abbiamo un continuo incremento delle prestazioni all'aumentare del numero di threads. Quando il numero di cluster viene aumentato a 500, il picco massimo delle prestazioni si ottiene con 6 threads e uno speedup di 2.96x. Aumentare il numero di threads porta ad una degradazione delle performance. Il grafico blu mostra un andamento analogo all'esperimento precedente, con uno speedup massimo di 2.39x.
+
+
+\subsection{Structure of Arrays}
+In questa sezione ripeteremo gli esperimenti fatti per la versione AoS, stavolta usando il paradigma Structure of Arrays.
+
+\begin{figure}[t]
+\begin{center}
+   \includegraphics[width=0.8\linewidth]{grafico_speedup_n_soa.png}
+\end{center}
+   \caption{Speedup della versione SoA all'aumentare del numero di punti.}
+\label{fig:speed_n_soa}
+\end{figure}
+
+In Figura \ref{fig:speed_n_soa} possiamo vedere come le performance raggiunte con questa versione sono migliori di quelle con AoS. In particolare a partire con i dataset di dimensione più grande si ottiene uno speedup di 4.52x, che dimostra come questo approccio risulti vincente quando si hanno grandi quantità di dati.
+
+
+
+\begin{figure}[t]
+\begin{center}
+   \includegraphics[width=0.8\linewidth]{grafico_speedup_k_soa.png}
+\end{center}
+   \caption{Speedup della versione SoA all'aumentare del numero di cluster.}
+\label{fig:speed_k_soa}
+\end{figure}
+
+Anche aumentando i cluster è possibile notare come l'approccio SoA permetta di migliorare le performance dell'algoritmo molto di più rispetto alla controparte AoS. Si riscontra però un comportamento analogo a prima; con K=500 si ottengono prestazioni peggiori rispetto a K=50. Questo probabilmente è dovuto dalla fase di aggiornamento dei centroidi dove i vari threads devono comunicare per effettuare la media. Inoltre la sezione critica è rappresenta da un ciclo sui centroidi e pertanto al crescere di K si verificheranno più di frequente situazioni di attesa.
+
+\subsection{Array of Structures vs Structure of Arrays}
+Dopo aver analizzato i due approcci indipendentemente in questa sezione andremo a confrontare i risultati numerici di entrambe le versioni, per misurare la differenza in termini di performance dei due metodi.
+
+\begin{table}[ht]
+\centering
+\caption{Confronto delle prestazioni fra AoS e SoA (N=100000)}
+\label{tab:performance_comparison}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Threads} & \textbf{AoS} & \textbf{SoA} & \textbf{Efficienza SoA vs AoS} \\ \hline \hline
+2  & 1.39x & 2.06x & 1.48x \\ \hline
+4  & 2.32x & 2.93x & 1.26x \\ \hline
+6  & 2.61x & 3.61x & 1.38x \\ \hline
+8  & 2.72x & 4.25x & 1.56x \\ \hline
+10 & 2.48x & 4.09x & 1.65x \\ \hline
+\end{tabular}
+}
+\end{table}
+La Tabella \ref{tab:performance_comparison} è estratta dal caso dove il numero di elementi è uguale a 100000, ma rispecchia tutti i casi che abbiamo analizzato. Sono illustrate le prestazioni dell'algoritmo in termini di speedup sia per la versione AoS che per SoA. Come è possibile notare l'approccio Structure of Arrays risulta essere sempre migliore di Array of Structures, confermando i risultati visti nella teoria. In particolare possiamo vedere come l'efficienza di questo metodo (calcolata dividendo lo speedup ottenuto con SoA per quello ottenuto con AoS), cresca con l'aumentare dei threads usati della parallelizzazione. Pertanto nel caso di quantità di dati maggiori e quindi un maggior numero di thread è sempre da preferire l'approccio Structure of Arrays.
+
+
+\begin{table}[ht]
+\centering
+\caption{Confronto delle prestazioni fra AoS e SoA (K=50)}
+\label{tab:performance_comparison2}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Threads} & \textbf{AoS} & \textbf{SoA} & \textbf{Efficienza SoA vs AoS} \\ \hline \hline
+2  & 1.39x & 2.60x & 1.87x \\ \hline
+4  & 1.78x & 3.01x & 1.69x \\ \hline
+6  & 2.37x & 3.89x & 1.64x \\ \hline
+8  & 2.97x & 4.38x & 1.47x \\ \hline
+10 & 3.22x & 4.09x & 1.27x \\ \hline
+\end{tabular}
+}
+\end{table}
+
+La Tabella \ref{tab:performance_comparison2} mostra i risultati in modo analogo a prima, ma stavolta prendendo un valore elevato del numero di cluster, invece del numero di punti. Anche in questo scenario le performance ottenute tramite SoA sono migliori. E' possibile notare però un pattern opposto a prima, stavolta infatti all'aumentare del numero di threads la scelta dell'approccio risulta meno importante. Nonostante ciò con il numero di threads ottimale (ossia 8), l'approccio Structure of Arrays risulta migliore di 1.47 punti.
+
 
 
 
@@ -347,211 +431,15 @@ Iniziamo quindi gli esperimenti valutando le prestazione della tecnica Structure
 
 %----------------------------------------------------------
 \section{Conclusioni}
-%----------------------------------------------------------
-\subsection{The ruler}
+l progetto ha quindi analizzato l’efficienza dell’algoritmo K-Means, facendo un confronto fra
+versione sequenziale e le due principali strategie di parallelizzazione, utilizzando OpenMP.
+Alla luce degli esperimenti condotti quindi, emergono le
+seguenti conclusioni:
+\begin{itemize}
+   \item L'algoritmo ha dimostrato di essere un ottimo candidato per la parallelizzazione. Entrambi gli approccio (AoS e SoA) si sono dimostrati particolarmente efficaci.
+   \item All'aumentare del numero di elementi del dataset la parallelizzazione mostra il suo lato migliore. All'aumentare del numero di threads si ottengono risultati di gran lunga migliori rispetto alla versione sequenziale.
+   \item Aumentando il numero di cluster la parallelizzazione offre ancora un gran risultato, superando sempre le performance della versione sequenziale. Per un valore di K alto il numero ottimale di threads risulta essere più basso. Rendendo deleterio fornire ulteriori core.
+   \item Il confronto fra Array of Structures e Structures of Arrays ci ha permesso di dimostrare che la seconda versione è quella che offre le prestazioni migliori, sia con una grande dimensione del dataset che con un alto numero di cluster.
+\end{itemize}
 
-
-\subsection{Mathematics}
-
-Please number all of your sections and displayed equations.  It is
-important for readers to be able to refer to any particular equation.  Just
-because you didn't refer to it in the text doesn't mean some future reader
-might not need to refer to it.  It is cumbersome to have to use
-circumlocutions like ``the equation second from the top of page 3 column
-1''.  (Note that the ruler will not be present in the final copy, so is not
-an alternative to equation numbers).  All authors will benefit from reading
-Mermin's description of how to write mathematics: \url{http://www.cvpr.org/doc/mermin.pdf}.
-
-\subsection{Miscellaneous}
-
-\noindent
-Compare the following:\\
-\begin{tabular}{ll}
- \verb'$conf_a$' &  $conf_a$ \\
- \verb'$\mathit{conf}_a$' & $\mathit{conf}_a$
-\end{tabular}\\
-See The \TeX book, p165.
-
-The space after \eg, meaning ``for example'', should not be a
-sentence-ending space. So \eg is correct, {\em e.g.} is not.  The provided
-\verb'\eg' macro takes care of this.
-
-When citing a multi-author paper, you may save space by using ``et alia'',
-shortened to ``\etal'' (not ``{\em et.\ al.}'' as ``{\em et}'' is a complete word.)
-However, use it only when there are three or more authors.  Thus, the
-following is correct: ``
-   Frobnication has been trendy lately.
-   It was introduced by Alpher~\cite{Alpher02}, and subsequently developed by
-   Alpher and Fotheringham-Smythe~\cite{Alpher03}, and Alpher \etal~\cite{Alpher04}.''
-
-This is incorrect: ``... subsequently developed by Alpher \etal~\cite{Alpher03} ...''
-because reference~\cite{Alpher03} has just two authors.  If you use the
-\verb'\etal' macro provided, then you need not worry about double periods
-when used at the end of a sentence as in Alpher \etal.
-
-For this citation style, keep multiple citations in numerical (not
-chronological) order, so prefer \cite{Alpher03,Alpher02,Authors06} to
-\cite{Alpher02,Alpher03,Authors06}.
-
-
-\begin{figure*}
-\begin{center}
-\fbox{\rule{0pt}{2in} \rule{.9\linewidth}{0pt}}
-\end{center}
-   \caption{Example of a short caption, which should be centered.}
-\label{fig:short}
-\end{figure*} 
-
-%------------------------------------------------------------------------
-\section{Formatting your paper}
-
-All text must be in a two-column format. The total allowable width of the
-text area is $6\frac78$ inches (17.5 cm) wide by $8\frac78$ inches (22.54
-cm) high. Columns are to be $3\frac14$ inches (8.25 cm) wide, with a
-$\frac{5}{16}$ inch (0.8 cm) space between them. The main title (on the
-first page) should begin 1.0 inch (2.54 cm) from the top edge of the
-page. The second and following pages should begin 1.0 inch (2.54 cm) from
-the top edge. On all pages, the bottom margin should be 1-1/8 inches (2.86
-cm) from the bottom edge of the page for $8.5 \times 11$-inch paper; for A4
-paper, approximately 1-5/8 inches (4.13 cm) from the bottom edge of the
-page.
-
-%-------------------------------------------------------------------------
-\subsection{Margins and page numbering}
-
-All printed material, including text, illustrations, and charts, must be
-kept within a print area 6-7/8 inches (17.5 cm) wide by 8-7/8 inches
-(22.54 cm) high.
-
-
-%-------------------------------------------------------------------------
-\subsection{Type-style and fonts}
-
-Wherever Times is specified, Times Roman may also be used. If neither is
-available on your word processor, please use the font closest in
-appearance to Times to which you have access.
-
-MAIN TITLE. Center the title 1-3/8 inches (3.49 cm) from the top edge of
-the first page. The title should be in Times 14-point, boldface type.
-Capitalize the first letter of nouns, pronouns, verbs, adjectives, and
-adverbs; do not capitalize articles, coordinate conjunctions, or
-prepositions (unless the title begins with such a word). Leave two blank
-lines after the title.
-
-AUTHOR NAME(s) and AFFILIATION(s) are to be centered beneath the title
-and printed in Times 12-point, non-boldface type. This information is to
-be followed by two blank lines.
-
-The ABSTRACT and MAIN TEXT are to be in a two-column format.
-
-MAIN TEXT. Type main text in 10-point Times, single-spaced. Do NOT use
-double-spacing. All paragraphs should be indented 1 pica (approx. 1/6
-inch or 0.422 cm). Make sure your text is fully justified---that is,
-flush left and flush right. Please do not place any additional blank
-lines between paragraphs.
-
-Figure and table captions should be 9-point Roman type as in
-Figures~\ref{fig:onecol} and~\ref{fig:short}.  Short captions should be centred.
-
-\noindent Callouts should be 9-point Helvetica, non-boldface type.
-Initially capitalize only the first word of section titles and first-,
-second-, and third-order headings.
-
-FIRST-ORDER HEADINGS. (For example, {\large \bf 1. Introduction})
-should be Times 12-point boldface, initially capitalized, flush left,
-with one blank line before, and one blank line after.
-
-SECOND-ORDER HEADINGS. (For example, { \bf 1.1. Database elements})
-should be Times 11-point boldface, initially capitalized, flush left,
-with one blank line before, and one after. If you require a third-order
-heading (we discourage it), use 10-point Times, boldface, initially
-capitalized, flush left, preceded by one blank line, followed by a period
-and your text on the same line.
-
-%-------------------------------------------------------------------------
-\subsection{Footnotes}
-
-Please use footnotes\footnote {This is what a footnote looks like.  It
-often distracts the reader from the main flow of the argument.} sparingly.
-Indeed, try to avoid footnotes altogether and include necessary peripheral
-observations in
-the text (within parentheses, if you prefer, as in this sentence).  If you
-wish to use a footnote, place it at the bottom of the column on the page on
-which it is referenced. Use Times 8-point type, single-spaced.
-
-
-%-------------------------------------------------------------------------
-\subsection{References}
-
-List and number all bibliographical references in 9-point Times,
-single-spaced, at the end of your paper. When referenced in the text,
-enclose the citation number in square brackets, for
-example~\cite{Authors06}.  Where appropriate, include the name(s) of
-editors of referenced books.
-
-\begin{table}
-\begin{center}
-\begin{tabular}{|l|c|}
-\hline
-Method & Frobnability \\
-\hline\hline
-Theirs & Frumpy \\
-Yours & Frobbly \\
-Ours & Makes one's heart Frob\\
-\hline
-\end{tabular}
-\end{center}
-\caption{Results.   Ours is better.}
-\end{table}
-
-%-------------------------------------------------------------------------
-\subsection{Illustrations, graphs, and photographs}
-
-All graphics should be centered.  Please ensure that any point you wish to
-make is resolvable in a printed copy of the paper.  Resize fonts in figures
-to match the font in the body text, and choose line widths which render
-effectively in print.  Many readers (and reviewers), even of an electronic
-copy, will choose to print your paper in order to read it.  You cannot
-insist that they do otherwise, and therefore must not assume that they can
-zoom in to see tiny details on a graphic.
-
-When placing figures in \LaTeX, it's almost always best to use
-\verb+\includegraphics+, and to specify the  figure width as a multiple of
-the line width as in the example below
-{\small\begin{verbatim}
-   \usepackage[dvips]{graphicx} ...
-   \includegraphics[width=0.8\linewidth]
-                   {myfile.eps}
-\end{verbatim}
-}
-
-
-%-------------------------------------------------------------------------
-\subsection{Color}
-
-Color is valuable, and will be visible to readers of the electronic copy.
-However ensure that, when printed on a monochrome printer, no important
-information is lost by the conversion to grayscale.
-
-{\small
-\bibliographystyle{ieee}
-\bibliography{egbib}
-}
-
-\section{Appendix}
-If your course project is part of a larger project from another class or research lab, please fill in this section and clearly spell out the following items:
-
-\begin{enumerate}
-\item  Explicitly explain what the computer vision components are in this course project;
-\item  Explicitly list out all of your own contributions in this project in terms of:
-	\begin{enumerate}
-	\item ideas
-	\item formulations of algorithms
- 	\item software and coding
-	\item designs of experiments
-	\item analysis of experiments
-	\end{enumerate}
-\item Verify and confirm that you (and your partner currently taking CS231A) are the sole author(s) of the writeup.
-Please provide papers, theses, or other documents related to this project so that we can compare with your own writeup.
-\end{enumerate}
 \end{document}

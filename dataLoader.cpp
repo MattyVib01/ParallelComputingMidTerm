@@ -130,7 +130,7 @@ std::vector<Point> loadDigitDataset() {
 
 std::vector<Point> loadGeneratedDataset() {
     std::vector<Point> dataset;
-    std::ifstream file("datasets/n10000002.csv"); 
+    std::ifstream file("datasets/k500.csv"); 
     std::string line;
 
     if (!file.is_open()) {

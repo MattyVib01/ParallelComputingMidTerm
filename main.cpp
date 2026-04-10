@@ -62,7 +62,7 @@ int main() {
 
     std::cout << "Dataset caricato: " << dataset_original.size() << " punti.\n";
 
-    int K = 10; 
+    int K = 500; 
     int max_iters = 200;
     int num_runs = 5; 
     int num_threads = 8; 
