@@ -2,8 +2,8 @@ import pandas as pd
 from sklearn.datasets import make_blobs
 
 # --- 1. Configurazione dei parametri ---
-numero_punti = 20000      
-numero_dimensioni = 4    
+numero_punti = 1000000      
+numero_dimensioni = 2    
 numero_cluster = 10       
 dispersione = 1.2        
 
@@ -24,7 +24,7 @@ colonne = [f'X{i+1}' for i in range(numero_dimensioni)]
 df = pd.DataFrame(X, columns=colonne)
 
 # --- 4. Esportazione in CSV ---
-nome_file = "dataset_solo_coordinate.csv"
+nome_file = "n10000002.csv"
 
 # Salviamo il file senza gli indici di riga
 df.to_csv(nome_file, index=False)
