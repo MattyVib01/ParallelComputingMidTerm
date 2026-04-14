@@ -1,15 +1,11 @@
 import pandas as pd
 from sklearn.datasets import make_blobs
 
-# --- 1. Configurazione dei parametri ---
 numero_punti = 20000     
 numero_dimensioni = 2    
 numero_cluster = 50       
 dispersione = 1.2        
 
-# --- 2. Generazione del dataset ---
-# Ora estraiamo solo X (le coordinate). 
-# Usiamo '_' per indicare a Python di ignorare le etichette dei cluster originali.
 X, _ = make_blobs(
     n_samples=numero_punti, 
     n_features=numero_dimensioni, 
@@ -18,15 +14,11 @@ X, _ = make_blobs(
     random_state=42 
 )
 
-# --- 3. Strutturazione dei dati ---
-# Creiamo il DataFrame contenente esclusivamente le coordinate
 colonne = [f'X{i+1}' for i in range(numero_dimensioni)]
 df = pd.DataFrame(X, columns=colonne)
 
-# --- 4. Esportazione in CSV ---
 nome_file = "k50.csv"
 
-# Salviamo il file senza gli indici di riga
 df.to_csv(nome_file, index=False)
 
 print(f"Fatto! Dataset generato con successo.")

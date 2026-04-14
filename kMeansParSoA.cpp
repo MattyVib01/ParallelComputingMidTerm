@@ -5,13 +5,11 @@
 #include <omp.h>
 #include <cstdlib>
 
-// Funzione helper per calcolare la distanza al quadrato usando gli array piatti (SoA)
 inline double calculateDistanceSquareSoA(const std::vector<double>& coords, int point_idx, 
                                          const std::vector<double>& centroids, int centroid_idx, 
                                          int dims) {
     double sum = 0.0;
     for (int d = 0; d < dims; ++d) {
-        // Matematica SoA: (riga * colonne) + colonna
         double diff = coords[point_idx * dims + d] - centroids[centroid_idx * dims + d];
         sum += diff * diff;
     }
@@ -23,8 +21,7 @@ void kMeansParSoA(DatasetSoA& dataset, int K, int max_iterations) {
     if (n == 0) return;
     int dims = dataset.dimensions;
 
-    // FASE 1: Inizializzazione (Sequenziale)
-    // I centroidi ora sono un unico array piatto di dimensione (K * dims)
+    // Inizializzazione dei centroidi
     std::vector<double> centroids(K * dims);
     srand(static_cast<unsigned>(time(0)));
     
@@ -41,8 +38,7 @@ void kMeansParSoA(DatasetSoA& dataset, int K, int max_iterations) {
     while (iter < max_iterations && changed) {
         changed = false;
 
-        // FASE 2: Assegnazione parallela
-        // Usiamo schedule(static) come default affidabile
+        // Assegnazione dei punti
         #pragma omp parallel for reduction(||:changed) schedule(static)
         for (int i = 0; i < n; i++) {
             double min_dist = std::numeric_limits<double>::max();
@@ -56,7 +52,6 @@ void kMeansParSoA(DatasetSoA& dataset, int K, int max_iterations) {
                 }
             }
 
-            // Leggiamo e scriviamo sull'array separato dei cluster
             if (dataset.clusters[i] != best_cluster) {
                 dataset.clusters[i] = best_cluster;
                 changed = true; 
@@ -65,30 +60,25 @@ void kMeansParSoA(DatasetSoA& dataset, int K, int max_iterations) {
 
         if (!changed) break;
 
-        // FASE 3: Aggiornamento dei centroidi
-        // Anche le somme diventano un array piatto!
+        // Aggiornamento dei centroidi
         std::vector<double> new_centroids_sum(K * dims, 0.0);
         std::vector<int> cluster_counts(K, 0);
 
         #pragma omp parallel
         {
-            // 3.1: Accumulatori LOCALI per ogni thread (piatti)
             std::vector<double> local_centroids_sum(K * dims, 0.0);
             std::vector<int> local_cluster_counts(K, 0);
 
-            // 3.2: Distribuzione del ciclo sui punti
             #pragma omp for schedule(static)
             for (int i = 0; i < n; ++i) {
                 int cluster_id = dataset.clusters[i];
                 local_cluster_counts[cluster_id]++;
                 
                 for (int d = 0; d < dims; ++d) {
-                    // Accumulo locale con indici SoA
                     local_centroids_sum[cluster_id * dims + d] += dataset.coords[i * dims + d];
                 }
             }
 
-            // 3.3: Unione sicura dei dati locali in quelli globali
             #pragma omp critical
             {
                 for (int j = 0; j < K; ++j) {
@@ -98,9 +88,8 @@ void kMeansParSoA(DatasetSoA& dataset, int K, int max_iterations) {
                     }
                 }
             }
-        } // Fine regione parallela
+        } 
 
-        // 3.4: Calcolo finale della media (Sequenziale)
         for (int j = 0; j < K; ++j) {
             if (cluster_counts[j] > 0) {
                 for (int d = 0; d < dims; ++d) {

@@ -14,13 +14,16 @@
 \lstset{
   language=C++,
   basicstyle=\ttfamily\small,
-  keywordstyle=\color{orange},
+  keywordstyle=\color{blue},
   commentstyle=\color{green!50!black},
   stringstyle=\color{red},
   numbers=left,
   numberstyle=\tiny\color{gray},
   breaklines=true,
-  frame=single,
+  frame=L,
+  captionpos=b,     % Sposta la caption in basso
+  basicstyle=\ttfamily\small, % Opzionale: un font monospace più elegante
+  breaklines=true
 }
 
 % Include other packages here, before hyperref.
@@ -57,17 +60,17 @@
 
 %%%%%%%%% ABSTRACT
 \begin{abstract}
-   Il progetto si concentra sull'implementazione dell'algoritmo K-Means, in particolare il confronto fra la versione sequenziale e quella parallela. K-Means è un algoritmo per l'apprendimento non supervisionato, che permette dato un insieme di punti appartenenti ad uno stesso spazio dimensionale e un valore K, di partizionare l'insieme di punti in K diversi cluster. K-Means crea i cluster assegnando ad ogni punto il centroide più vicino, andando così a minimizzare la varianza all'interno di ogni gruppo. Lo scopo principale del progetto è quindi di implementare una versione parallela dell'algoritmo tramite il framework OpenMP, valutando i vantaggi rispetto alla versione sequenziale. Si andrà inoltre a ricercare la migliore soluzione al problema della parallelizzazione.
+   Il progetto si concentra sull'implementazione dell'algoritmo K-Means, in particolare il confronto fra la versione sequenziale e quella parallela. K-Means è un algoritmo per l'apprendimento non supervisionato, che permette dato un insieme di punti appartenenti ad uno stesso spazio dimensionale e un valore K, di partizionare l'insieme di punti in K diversi cluster. L'algoritmo crea i cluster assegnando ad ogni punto il centroide più vicino, andando così a minimizzare la varianza all'interno di ogni gruppo. Lo scopo principale del progetto è quindi di implementare una versione parallela dell'algoritmo tramite il framework OpenMP, valutando i vantaggi rispetto alla versione sequenziale. Si andrà inoltre a ricercare la migliore soluzione al problema della parallelizzazione.
 \end{abstract}
 
 %%%%%%%%% BODY TEXT
 \noindent\textbf{Future Distribution Permission}\\
 \indent The author(s) of this report give permission for this document to be distributed to Unifi-affiliated students taking future courses.
 
-\section{Introduction}
+\section{Introduzione}
 
-L'algoritmo K-Means è un metodo che permette di formare cluster a partire da un dato insieme di punti. Questo viene fatto dando in input all'algoritmo un dataset di punti e un valore K che rappresenta il numero di cluster in cui saranno divisi i punti. L'algoritmo si basa sull'utilizzo dei centroidi, ossia K punti appartenenti al dataset, che durante l'esecuzione dell'algoritmo si andranno a spostare in base all'assegnazione dei punti del dataset ad ogni cluster. Al termine dell'algoritmo ogni punto sarà assegnato al cluster che minimizza la distaza con il proprio centroide. L'algoritmo è composto da tre fasi che vedremo nella prossima sezione ed è un algoritmo molto noto in letteratura, poichè nonostante la sua semplicità nell'implementazione risulta essere molto efficace. Nonostante questo però presenta alcune criticità, infatti all'aumentare della dimensionalità dei punti selezionati, sia per quanto riguarda il numero che per lo spazio, i tempi di esecuzione si dilatano notevolmente. Con lo scopo di superare queste limitazioni ho implementato la versione parallela dell'algoritmo. 
-Attraverso il framework \textit{OpenMP} è possibile parallelizzare parte del codice, e tramite questo andremo a valutare quanto l'impatto della parallelizzazione migliori le prestazioni dell'algoritmo.
+L'algoritmo K-Means è un metodo che permette di formare cluster a partire da un dato insieme di punti. Questo viene fatto dando in input all'algoritmo un dataset di punti e un valore K che rappresenta il numero di cluster in cui saranno divisi i punti. L'algoritmo si basa sull'utilizzo dei centroidi, ossia K punti appartenenti al dataset, che durante l'esecuzione dell'algoritmo si andranno a spostare in base all'assegnazione dei punti del dataset ad ogni cluster. Al termine dell'algoritmo ogni punto sarà assegnato al cluster che minimizza la distanza con il proprio centroide. L'algoritmo è composto da tre fasi che vedremo nella prossima sezione ed è un algoritmo molto noto in letteratura, poichè nonostante la sua semplicità nell'implementazione risulta essere molto efficace. Nonostante questo però presenta alcune criticità, infatti all'aumentare della dimensionalità dei punti selezionati, sia per quanto riguarda il numero che per lo spazio, i tempi di esecuzione si dilatano notevolmente. Con lo scopo di superare queste limitazioni ho implementato la versione parallela dell'algoritmo. 
+Attraverso il framework \textit{OpenMP} è possibile parallelizzare parte del codice, pertanto andremo a valutare quanto l'impatto della parallelizzazione migliori le prestazioni dell'algoritmo.
 \begin{figure}[t]
 \begin{center}
    \includegraphics[width=0.8\linewidth]{img1.jpg}
@@ -88,16 +91,16 @@ L'algoritmo K-Means è costituito da tre fasi principali, ognuna contraddistinta
 Sull'implementazione di ogni fase ci concentreremo di seguito quando parleremo nel dettaglio del confronto fra versione sequenziale e parallela.
 Per quanto riguarda le condizioni di convergenza dell'algoritmo esistono varie scelte, io ho preferito interrompere l'algoritmo quando nessun punto ha cambiato cluster dopo un'iterazione di assegnazione dei punti ai rispettivi gruppi.
 
-\subsection{OpenMP directives}
+\subsection{Direttive OpenMP}
 Prima di iniziare con l'analisi del codice è utile vedere le direttive che andrò ad utilizzare per parallelizzare l'algoritmo nel progetto. Grazie a questo particolare tipo di istruzioni presenti in \textit{OpenMP} è possibile creare multipli threads così da velocizzare l'esecuzione del codice, di seguito le direttive che ho usato. 
 \begin{itemize}
    \item \lstinline{#pragma omp parallel}: Grazie a questa istruzione è possibile generare multipli threads all'interno del programma.
-   \item \lstinline{#pragma omp for} : the \textit{omp for} directive instructs the compiler to distribute loop iterations within the team of threads that encounters this work-sharing construct.
-   \item \lstinline{#pragma omp critical}: The \textit{omp critical} directive identifies a section of code that must be executed by a single thread at a time.
+   \item \lstinline{#pragma omp for} : la direttiva \textit{omp for} dice al compilatore di distribuire il ciclo che segue fra più thread.
+   \item \lstinline{#pragma omp critical}: Questa direttiva identifica una sezione critica del codice che deve essere eseguita da un singolo thread alla volta.
 \end{itemize}
 Grazie a queste direttive non solo riusciremo a parallelizzare il codice, ma anche ad evitare problemi che potrebbero nascere proprio a causa della parallelizzazione.
 
-\subsection{Sequential version}
+\subsection{Versione sequenziale}
 Iniziamo l'analisi con la versione sequenziale dell'algoritmo K-Means. L'algoritmo è molto noto in letteratura e come detto prima è formato da tre parti principali. L'algoritmo è stato scritto in modo tale da potersi adattare alla versione parallela con poche aggiunte (principalmente le direttive \textit{OpenMP}).
 
 \begin{lstlisting}[caption={Fase di assegnamento della versione sequenziale}, label={lst:openmp}]
@@ -144,10 +147,10 @@ for (int j = 0; j < K; ++j) {
 
 In questo blocco vengono innanzitutto inizializzati due parametri: una matrice che si occuperà di conservare le somme dei punti che appartengono ad un particolare centroide per ognuna delle sue dimensioni e un vettore che conta il numero di punti all'interno di un cluster.
 Si ha quindi un ciclo su ogni punto, che andrà ad incrementare il contatore del relativo cluster e andrà ad aggiornare la matrice delle somme.
-Una volta aggiornati questi due parametri per ogni punto si andrà ad effettuare la media dividendo i valori all'interno della matrice per il vettore delle somme di ogni centroide, ottenendo così le coordinate dei centroidi aggiornate. Senza far vedere il codice ritengo corrette citare la condizione di arresto che si verifica quando dopo un'iterazione dell'algoritmo nessun punto ha cambiato cluster rispetto all'iterazione precedente, ed è implementato con un semplice ciclo \lstinline{while}.
+Una volta aggiornati questi due parametri per ogni punto si andrà ad effettuare la media dividendo i valori all'interno della matrice per il vettore delle somme di ogni centroide, ottenendo così le coordinate dei centroidi aggiornate. Senza far vedere il codice ritengo corretto citare la condizione di arresto, che si verifica quando dopo un'iterazione dell'algoritmo nessun punto ha cambiato cluster rispetto all'iterazione precedente, ed è implementato con un semplice ciclo \lstinline{while}.
 
 
-\subsection{Parallel version}
+\subsection{Versione parallela}
 Dopo aver implementato la versione sequenziale del co-
 dice vediamo adesso come è possibile passare ad una ver-
 sione parallela.
@@ -156,12 +159,12 @@ Le versioni parallele sviluppate in realtà sono due, che sfruttano due approcci
    \item Array of Structures (AoS): E' l'approccio più vicino a quanto implementato con la versione sequenziale. I dati sono organizzati in memoria in modo che il singolo punto abbia le proprie coordinate spazialmente vicine.
    \item Structure of Arrays (SoA): Questo approccio separa la singole componenti dei punti in array distinti, permettendo ai thread di leggere blocchi contigui di memoria durante il calcolo delle distanze.
 \end{itemize}
-A livello teorico quindi l'approccio SoA dovrebbe darci risultati migliori in termini di speed-up rispetto alla versione sequenziale, vedremo nella sezione degli Esperimenti se questo sarà confermato.
+A livello teorico quindi l'approccio SoA dovrebbe darci risultati migliori in termini di speedup rispetto alla versione sequenziale, vedremo nella sezione degli Esperimenti se questo sarà confermato.
 Soffermiamoci adesso ad analizzare entrambe le versioni di codice che abbiamo implementato.
 
 \subsubsection{Array of Structures}
 Come detto prima questa prima versione parallela non si discosta molto da quella sequenziale, grazie all'approccio usato in precedenza è sufficiente adattare il codice prestando attenzione ad alcune problemi derivati dalla parallelizzazione.
-Andiamo innanzitutto a valutare la struttura della classe \lstinline{Point}, che risulta esere la stessa utilizzata nella versione sequenziale
+Andiamo innanzitutto a valutare la struttura della classe \lstinline{Point}, che risulta essere la stessa utilizzata nella versione sequenziale
 \begin{lstlisting}[caption={Implementazione dei punti nella versione AoS}, label={lst:openmp}]
 struct Point {
     int cluster;
@@ -233,7 +236,7 @@ if (cluster_counts[j] > 0) {
 }
 \end{lstlisting}
 
-La fase di aggiornamento dei centroidi i apre con, oltre alla dichiarazione degli accumulatori di somme e numero di punti, anche con quella di accumulatori locali per ogni cluster, che assegneremo ad ogni thread. Anche stavolta tramite la direttiva \lstinline{#pragma omp for}, andremo a parallelizzare il ciclo. In manier analoga a prima ogni thread andrà ad aggiornare i propri accumulatori. Una volta terminato l'aggiornamento degli accumulatori per ogni punto, è necessario aggiornare gli accumulatori globali, andandogli ad assegnare la somma dei rispettivi contatori parziali. Questa operazione può portare al verificarsi di una race condition, dove due threads leggono un valore e provano a sovrascrivere gli accumulatori globali con i propri valori, rischiando di portare a risultati errati. Per risolvere questo problema abbiamo adottato il costrutto \lstinline{#pragma omp critical} che assicura che un solo thread alla volta aggiorni i contatori globali.
+La fase di aggiornamento dei centroidi si apre con, oltre alla dichiarazione degli accumulatori di somme e numero di punti, anche con quella di accumulatori locali per ogni cluster, che assegneremo ad ogni thread. Anche stavolta tramite la direttiva \lstinline{#pragma omp for}, andremo a parallelizzare il ciclo. In maniera analoga a prima ogni thread andrà ad aggiornare i propri accumulatori. Una volta terminato l'aggiornamento degli accumulatori per ogni punto, è necessario aggiornare gli accumulatori globali, andandogli ad assegnare la somma dei rispettivi contatori parziali. Questa operazione può portare al verificarsi di una race condition, dove due threads leggono un valore e provano a sovrascrivere gli accumulatori globali con i propri valori, rischiando di portare a risultati errati. Per risolvere questo problema abbiamo adottato il costrutto \lstinline{#pragma omp critical} che assicura che un solo thread alla volta aggiorni i contatori globali.
 
 \subsubsection{Structure of Arrays}
 Andiamo a vedere in questa sezione come è possibile implementare l'algoritmo con il paradigma SoA. Di seguito il codice che illustra la struttura l'implementazione dei punti con questa tecnica.
@@ -251,11 +254,10 @@ struct DatasetSoA {
 
 Il dataset viene implementato tramite la struct DatasetSoA che ha come attributi, il numero totale di punti e di dimensioni, il vettore che rappresenta le coordinate dei punti e un array separato per etichette dei clusters. La funzione \lstinline{convertToSoA} si occuperà di convertire i punti passati nel formato AoS, in questo formato, tramite un ciclo for. 
 
-\begin{lstlisting}[caption={ciclo for all'interno di convertToSoA}, label={lst:openmp}]
+\begin{lstlisting}[caption={Ciclo for all'interno di convertToSoA}, label={lst:openmp}]
 for (int i = 0; i < soa.num_points; ++i) {
    soa.clusters[i] = aos_dataset[i].cluster;
    for (int d = 0; d < soa.dimensions; ++d) {
-      // Indice piatto: (riga * numero_colonne) + colonna
       soa.coords[i * soa.dimensions + d] = aos_dataset[i].values[d];
    }
 }
@@ -300,7 +302,7 @@ if (cluster_counts[j] > 0) {
 }
 \end{lstlisting}
 
-Nelle operazioni compiute il codice è molto simile a quello scritto per la versione AoS. Fin da subito però è possibile notare come sia gli accumulatori globali che quelli locali siano cambiate. In questa versione infatti si richiede per le somme dei centroidi una allocazione per un blocco continuo, al contrario delle metrici allocate in precedenza. Inoltre il costrutto di parallelizzazione è diventato \lstinline{#pragma omp for schedule(static)}, che forza l'assegnazione dei blocchi contigui ad uno stesso thread (cosa che è stata aggiunta anche alla fase di assegnamento dei punti). Infine sia il calcolo della somma dei centroidi e della media finale vengono fatte utilizzando la rappresentazione piatta.
+Nelle operazioni compiute il codice è molto simile a quello scritto per la versione AoS. Fin da subito però è possibile notare come sia gli accumulatori globali che quelli locali siano cambiati. In questa versione infatti si richiede per le somme dei centroidi una allocazione per un blocco continuo, al contrario delle metrici allocate in precedenza. Inoltre il costrutto di parallelizzazione è diventato \lstinline{#pragma omp for schedule(static)}, che forza l'assegnazione dei blocchi contigui ad uno stesso thread (cosa che è stata aggiunta anche alla fase di assegnamento dei punti). Infine sia il calcolo della somma dei centroidi e della media finale vengono fatte utilizzando la rappresentazione piatta.
 
 
 
@@ -327,7 +329,7 @@ I dataset sono stati creati attraverso una funzione Python creata appositamente 
    \item Dimensione del piano su cui giaccioni i punti
    \item Parametro di dispersione dei punti
 \end{itemize}
-e restituisce in output un dataset in formato csv, che contiene sulle righe le coordinate di ogni punto. Poichè k-means è un algoritmo non supervisionato nel dataset non è presente il cluster di appartenenza, nonostante ciò il numero di cluster è un parametro in input per creare dataset che abbiamo punti che vadano a formare cluster definiti. Per convertire i punti in formato SoA verrà poi usata la funzione apposita definita nella sezione precedente; la conversione come era logico aspettarsi non concorrerà alla misurazione del tempo di esecuzione dell'algoritmo.
+e restituisce in output un dataset in formato csv, che contiene sulle righe le coordinate di ogni punto. Poichè k-means è un algoritmo non supervisionato nel dataset non è presente il cluster di appartenenza. Nonostante ciò il numero di cluster è un parametro in input per creare dataset che abbiamo punti che vadano a formare cluster definiti. Per convertire i punti in formato SoA verrà poi usata la funzione apposita definita nella sezione precedente; la conversione come era logico aspettarsi non concorrerà alla misurazione del tempo di esecuzione dell'algoritmo.
 
 
 \subsection{Array of Structures}
@@ -431,13 +433,13 @@ La Tabella \ref{tab:performance_comparison2} mostra i risultati in modo analogo 
 
 %----------------------------------------------------------
 \section{Conclusioni}
-l progetto ha quindi analizzato l’efficienza dell’algoritmo K-Means, facendo un confronto fra
+Il progetto ha quindi analizzato l’efficienza dell’algoritmo K-Means, facendo un confronto fra
 versione sequenziale e le due principali strategie di parallelizzazione, utilizzando OpenMP.
 Alla luce degli esperimenti condotti quindi, emergono le
 seguenti conclusioni:
 \begin{itemize}
-   \item L'algoritmo ha dimostrato di essere un ottimo candidato per la parallelizzazione. Entrambi gli approccio (AoS e SoA) si sono dimostrati particolarmente efficaci.
-   \item All'aumentare del numero di elementi del dataset la parallelizzazione mostra il suo lato migliore. All'aumentare del numero di threads si ottengono risultati di gran lunga migliori rispetto alla versione sequenziale.
+   \item L'algoritmo ha dimostrato di essere un ottimo candidato per la parallelizzazione. Entrambi gli approcci (AoS e SoA) si sono dimostrati particolarmente efficaci.
+   \item All'aumentare del numero di elementi del dataset la parallelizzazione mostra il suo lato migliore. Infatti si ottengono risultati di gran lunga migliori rispetto alla versione sequenziale.
    \item Aumentando il numero di cluster la parallelizzazione offre ancora un gran risultato, superando sempre le performance della versione sequenziale. Per un valore di K alto il numero ottimale di threads risulta essere più basso. Rendendo deleterio fornire ulteriori core.
    \item Il confronto fra Array of Structures e Structures of Arrays ci ha permesso di dimostrare che la seconda versione è quella che offre le prestazioni migliori, sia con una grande dimensione del dataset che con un alto numero di cluster.
 \end{itemize}
