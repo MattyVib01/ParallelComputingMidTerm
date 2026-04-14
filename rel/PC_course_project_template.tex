@@ -43,7 +43,7 @@
 \begin{document}
 
 %%%%%%%%% TITLE
-\title{KMeans OpenMP}
+\title{K-Means: Confronto fra la versione sequenziale e le implementazioni parallele sviluppate con OpenMP }
 
 \author{Mattia Baroncelli\\
 7166468\\
@@ -442,6 +442,15 @@ seguenti conclusioni:
    \item All'aumentare del numero di elementi del dataset la parallelizzazione mostra il suo lato migliore. Infatti si ottengono risultati di gran lunga migliori rispetto alla versione sequenziale.
    \item Aumentando il numero di cluster la parallelizzazione offre ancora un gran risultato, superando sempre le performance della versione sequenziale. Per un valore di K alto il numero ottimale di threads risulta essere più basso. Rendendo deleterio fornire ulteriori core.
    \item Il confronto fra Array of Structures e Structures of Arrays ci ha permesso di dimostrare che la seconda versione è quella che offre le prestazioni migliori, sia con una grande dimensione del dataset che con un alto numero di cluster.
+\end{itemize}
+
+\section{Specifiche della macchina}
+
+\begin{itemize}
+   \item Processore 11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz 2.42 GHz
+   \item RAM installata 8,00 GB (7,70 GB utilizzabile)
+   \item Sistema operativo Windows 11 a 64 bit, processore basato su x64
+   \item Ambiente di sviluppo: Visual Studio Code
 \end{itemize}
 
 \end{document}

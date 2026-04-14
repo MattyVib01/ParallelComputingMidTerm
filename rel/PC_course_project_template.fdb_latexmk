@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1776163476.89244 "c:/Users/matti/Desktop/UNIVERSITA/parallel/Ex1/rel/PC_course_project_template.tex" "PC_course_project_template.pdf" "PC_course_project_template" 1776163479.72566 0
+["pdflatex"] 1776163743.61752 "c:/Users/matti/Desktop/UNIVERSITA/parallel/Ex1/rel/PC_course_project_template.tex" "PC_course_project_template.pdf" "PC_course_project_template" 1776163746.21729 0
   "C:/Users/matti/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1775829619 95356 043d47899ea2cded8f553d8421c1ecba ""
   "C:/Users/matti/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1760089577 24225047 511c4c92957775ce37541764e35af610 ""
   "C:/Users/matti/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc" 1458473887 4993 80dc9bab7f31fb78a000ccfed0e27cab ""
@@ -78,9 +78,9 @@
   "C:/Users/matti/AppData/Local/Programs/MiKTeX/tex/latex/tools/xspace.sty" 1700599895 4545 9f5ea23ab1c91476c42749893f790666 ""
   "C:/Users/matti/AppData/Local/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Users/matti/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1700127522 55487 80a65caedd3722f4c20a14a69e785d8f ""
-  "PC_course_project_template.aux" 1776163479 4438 f761cf694f2f738a74eb3a07721459ce "pdflatex"
-  "PC_course_project_template.tex" 1776163473 28388 d02555a9d502d04d9c2b47aa30268352 ""
-  "c:/Users/matti/Desktop/UNIVERSITA/parallel/Ex1/rel/PC_course_project_template.tex" 1776163473 28388 d02555a9d502d04d9c2b47aa30268352 ""
+  "PC_course_project_template.aux" 1776163746 4564 db682e6360aedb38facda2637f23e44b "pdflatex"
+  "PC_course_project_template.tex" 1776163739 28797 bcaae6cf79346991a69a27a2ee45763f ""
+  "c:/Users/matti/Desktop/UNIVERSITA/parallel/Ex1/rel/PC_course_project_template.tex" 1776163739 28797 bcaae6cf79346991a69a27a2ee45763f ""
   "cvpr.sty" 1773331635 8435 51b6483a72e0a50ce1e426c0920c8b85 ""
   "cvpr_eso.sty" 1773331636 3987 6aa7c08ff2621006e0603349e40a30a8 ""
   "eso-pic.sty" 1773331635 9727 d2935ae95b5cd343fcf5887ff530288d ""
