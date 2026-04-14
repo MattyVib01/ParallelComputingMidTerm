@@ -1,6 +1,6 @@
 # Implementazione K-Means con OpenMP: Sequenziale vs Parallela
 
-Il seguente progetto è un lavoro per il corso di Parallel Computing per i corso di Ingegneria Informatica presso l'Università degli Studi di Firenze.
+Il seguente progetto è un lavoro per il corso di Parallel Computing per il corso di Ingegneria Informatica presso l'Università degli Studi di Firenze.
 Questo repository contiene i file necessari ad eseguire gli eseperimenti illustrati nella relazione `main.pdf`
 
 
